@@ -159,13 +159,13 @@ GummiGui* gui_init(GtkBuilder* builder)
     gtk_window_maximize(g->mainwindow);
   } else {
     gtk_window_resize(g->mainwindow,
-        atoi(config_get_value("mainwindow_w")),
-        atoi(config_get_value("mainwindow_h")));
+                      atoi(config_get_value("mainwindow_w")),
+                      atoi(config_get_value("mainwindow_h")));
   }
 
   gtk_window_set_default_size(g->mainwindow,
-        atoi(config_get_value("mainwindow_w")),
-        atoi(config_get_value("mainwindow_h")));
+                              atoi(config_get_value("mainwindow_w")),
+                              atoi(config_get_value("mainwindow_h")));
 
   wx = atoi(config_get_value("mainwindow_x"));
   wy = atoi(config_get_value("mainwindow_y"));
@@ -362,8 +362,6 @@ void gui_set_window_title(const gchar* filename, const gchar* text)
   gtk_window_set_title(gui->mainwindow, title);
   g_free(title);
 }
-
-
 
 void on_recovery_infobar_response(GtkInfoBar* bar, gint res,
                                   gpointer filename)

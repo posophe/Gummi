@@ -73,7 +73,7 @@ gboolean biblio_detect_bibliography(GuBiblio* bc, GuEditor* ec)
 
   content = editor_grab_buffer(ec);
   bib_regex = g_regex_new("^\\\\bibliography{\\s*([^{}\\s]*)\\s*}",
-      G_REGEX_MULTILINE, 0, NULL);
+                          G_REGEX_MULTILINE, 0, NULL);
   if (g_regex_match(bib_regex, content, 0, &match_info)) {
     result = g_match_info_fetch_all(match_info);
     if (result[1]) {

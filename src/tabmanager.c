@@ -183,7 +183,7 @@ void tabmanager_update_tab(const gchar* filename)
   add_to_recent_list (g_active_tab->editor->filename);
 
   slog (L_INFO, "Environment updated for %s\n",
-      g_active_tab->editor->filename);
+        g_active_tab->editor->filename);
   previewgui_reset (gui->previewgui);
 }
 
