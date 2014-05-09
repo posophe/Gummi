@@ -60,8 +60,8 @@ GUI_LIBS="$GUI_LIBS $poppler_LIBS"
 if test "$spellcheck" = yes; then
     PKG_CHECK_MODULES(gtkspell3, [gtkspell3-3.0],,
 	    [AC_MSG_ERROR([You need gtkspell3 to build $PACKAGE])])
-    GUI_CFLAGS="$GUI_CFLAGS $gtkspell_CFLAGS"
-    GUI_LIBS="$GUI_LIBS $gtkspell_LIBS"
+    GUI_CFLAGS="$GUI_CFLAGS $gtkspell3_CFLAGS"
+    GUI_LIBS="$GUI_LIBS $gtkspell3_LIBS"
 fi
 
 # Add explicit linking flags
