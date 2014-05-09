@@ -46,13 +46,13 @@ struct _GuLatex {
   gboolean modified_since_compile;
 
   int tex_version;
-
+  gboolean compile_status;
 };
 
 GuLatex* latex_init(void);
 gboolean latex_precompile_check(gchar* editortext);
 gchar* latex_update_workfile(GuLatex* mc, GuEditor* ec);
-gboolean latex_update_pdffile(GuLatex* mc, GuEditor* ec);
+void latex_update_pdffile(GuLatex* mc, GuEditor* ec);
 void latex_update_auxfile(GuLatex* mc, GuEditor* ec);
 void latex_export_pdffile(GuLatex* lc, GuEditor* ec, const gchar* path,
                           gboolean prompt_overrite);

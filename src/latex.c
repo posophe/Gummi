@@ -168,13 +168,16 @@ void latex_analyse_errors(GuLatex* lc)
   g_regex_unref(match_str);
 }
 
-gboolean latex_update_pdffile(GuLatex* lc, GuEditor* ec)
+void latex_update_pdffile(GuLatex* lc, GuEditor* ec)
 {
   static glong cerrors = 0;
   gchar* basename = ec->basename;
   gchar* filename = ec->filename;
 
-  if (!lc->modified_since_compile) return cerrors == 0;
+  if (!lc->modified_since_compile) {
+    lc->compile_status = cerrors == 0;
+
+  }
 
   const gchar* typesetter = config_get_value("typesetter");
   if (!external_exists(typesetter)) {
@@ -204,7 +207,7 @@ gboolean latex_update_pdffile(GuLatex* lc, GuEditor* ec)
 
   g_free(command);
 
-  return cerrors == 0;
+  lc->compile_status = cerrors == 0;
 }
 
 void latex_update_auxfile(GuLatex* lc, GuEditor* ec)

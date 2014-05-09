@@ -482,6 +482,7 @@ gboolean on_mainwindow_window_state_event(GtkWidget *widget, GdkEvent* event,
   } else {
     config_set_value("window_maximized", "False");
   }
+  return FALSE;
 }
 
 G_MODULE_EXPORT

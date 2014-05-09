@@ -54,8 +54,10 @@
    http://en.wikipedia.org/wiki/File_URI_scheme#Linux */
 #ifdef WIN32
 gint usize = 8;
+const gchar *urifrmt = "file:///";
 #else
 gint usize = 7;
+const gchar *urifrmt = "file://";
 #endif
 
 enum {
@@ -89,6 +91,9 @@ typedef struct {
   gint score;
 } SyncNode;
 
+
+static void on_document_compiled(GObject* hook, GuEditor* editor);
+static void on_document_error(GObject* hook, const gchar* error_text);
 static void previewgui_set_scale(GuPreviewGui* pc, gdouble scale, gdouble x,
                                  gdouble y);
 
@@ -163,6 +168,13 @@ GuPreviewGui* previewgui_init(GtkBuilder * builder)
   g_return_val_if_fail(GTK_IS_BUILDER(builder), NULL);
 
   GuPreviewGui* p = g_new0(GuPreviewGui, 1);
+  p->sig_hook = g_object_new(G_TYPE_OBJECT, NULL);
+
+  g_signal_connect(p->sig_hook, "document-compiled",
+                   G_CALLBACK(on_document_compiled), NULL);
+  g_signal_connect(p->sig_hook, "document-error",
+                   G_CALLBACK(on_document_error), NULL);
+
   GdkRGBA bg = {0.90, 0.90, 0.90, 1.0};
   p->previewgui_viewport =
     GTK_VIEWPORT(gtk_builder_get_object(builder, "preview_vport"));
@@ -189,6 +201,7 @@ GuPreviewGui* previewgui_init(GtkBuilder * builder)
                               (gtk_builder_get_object(builder, "page_layout_one_column"));
   p->update_timer = 0;
   p->preview_on_idle = FALSE;
+  p->errormode = FALSE;
   p->hadj = gtk_scrolled_window_get_hadjustment
             (GTK_SCROLLED_WINDOW(p->scrollw));
   p->vadj = gtk_scrolled_window_get_vadjustment
@@ -289,6 +302,67 @@ GuPreviewGui* previewgui_init(GtkBuilder * builder)
   return p;
 }
 
+void previewgui_start_errormode(GuPreviewGui *pc, const gchar *msg)
+{
+
+  if (pc->errormode) {
+    infoscreengui_set_message(gui->infoscreengui, msg);
+    return;
+  }
+
+  previewgui_save_position(pc);
+
+  infoscreengui_enable(gui->infoscreengui, msg);
+  pc->errormode = TRUE;
+}
+
+void previewgui_stop_errormode(GuPreviewGui *pc)
+{
+
+  if (!pc->errormode) return;
+
+  previewgui_restore_position(pc);
+
+  infoscreengui_disable(gui->infoscreengui);
+  pc->errormode = FALSE;
+}
+
+static void on_document_compiled(GObject* hook, GuEditor* editor)
+{
+  GuLatex* latex = gummi_get_latex();
+  GuPreviewGui* pc = gui->previewgui;
+
+  previewgui_update_statuslight(latex->compile_status ? "gtk-yes" : "gtk-no");
+
+  /* Make sure the editor still exists after compile */
+  if (editor == gummi_get_active_editor()) {
+    editor_apply_errortags(editor, latex->errorlines);
+    gui_buildlog_set_text(latex->compilelog);
+
+    if (latex->errorlines[0]) {
+      previewgui_start_errormode(pc, "compile_error");
+    } else {
+      if (!pc->uri) {
+
+        gchar* uri = g_strconcat(urifrmt, editor->pdffile, NULL);
+        previewgui_set_pdffile(pc, uri);
+        g_free(uri);
+      } else {
+        previewgui_refresh(gui->previewgui,
+            editor->sync_to_last_edit ?
+            & (editor->last_edit) : NULL, editor->workfile);
+      }
+      if (pc->errormode) previewgui_stop_errormode(pc);
+    }
+  }
+}
+
+static void on_document_error(GObject* hook, const gchar* error_text)
+{
+  previewgui_start_errormode(gui->previewgui, error_text);
+}
+
+
 inline static gint get_document_margin(GuPreviewGui* pc)
 {
   if (pc->pageLayout == POPPLER_PAGE_LAYOUT_SINGLE_PAGE) {
@@ -361,7 +435,7 @@ void previewgui_page_layout_radio_changed(GtkMenuItem *radioitem,
     config_set_value("pagelayout", "one_column");
   }
 
-  previewgui_set_page_layout(gui->previewgui, pageLayout);
+  previewgui_set_page_layout(pc, pageLayout);
 }
 
 static gboolean previewgui_animated_scroll_step(gpointer data)
@@ -401,7 +475,7 @@ static gboolean previewgui_animated_scroll_step(gpointer data)
 void previewgui_update_statuslight(const gchar* type)
 {
   gtk_tool_button_set_stock_id(GTK_TOOL_BUTTON(gui->previewgui->statuslight),
-                               type);
+      type);
 }
 
 static void update_fit_scale(GuPreviewGui* pc)

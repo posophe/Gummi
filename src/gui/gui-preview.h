@@ -91,6 +91,8 @@ struct _GuPreviewPage {
 typedef struct _GuPreviewGui GuPreviewGui;
 
 struct _GuPreviewGui {
+  GObject* sig_hook;
+
   PopplerDocument* doc;
   GtkViewport* previewgui_viewport;
   GtkWidget* previewgui_toolbar;
@@ -119,6 +121,7 @@ struct _GuPreviewGui {
   gchar *uri;
   gint update_timer;
   gboolean preview_on_idle;
+  gboolean errormode;
 
   GtkAdjustment* hadj;
   GtkAdjustment* vadj;

@@ -55,15 +55,6 @@
 #include "snippets.h"
 #include "utils.h"
 
-/* set up uri using appropriate formatting for OS
-   http://en.wikipedia.org/wiki/File_URI_scheme#Linux */
-#ifdef WIN32
-const gchar *urifrmt = "file:///";
-#else
-const gchar *urifrmt = "file://";
-#endif
-
-
 extern GummiGui* gui;
 extern Gummi* gummi;
 
@@ -172,14 +163,11 @@ gpointer motion_compile_thread(gpointer data)
   GuMotion* mc = GU_MOTION(data);
   GuEditor* editor = NULL;
   GuLatex* latex = NULL;
-  GuPreviewGui* pc = NULL;
-  GtkWidget* focus = NULL;
   gboolean precompile_ok = FALSE;
   gboolean compile_status = FALSE;
   gchar *editortext;
 
   latex = gummi_get_latex();
-  pc = gui->previewgui;
 
   while (TRUE) {
     if (!g_mutex_trylock(&mc->compile_mutex)) continue;
@@ -201,55 +189,27 @@ gpointer motion_compile_thread(gpointer data)
       continue;
     }
 
-    gdk_threads_enter();
-    focus = gtk_window_get_focus(gui->mainwindow);
     editortext = latex_update_workfile(latex, editor);
 
     precompile_ok = latex_precompile_check(editortext);
     g_free(editortext);
 
-    gtk_widget_grab_focus(focus);
-
     if (!precompile_ok) {
-      motion_start_errormode(mc, "document_error");
-      gdk_threads_leave();
+      g_signal_emit_by_name(gui->previewgui->sig_hook, "document-error",
+          "document_error");
       g_mutex_unlock(&mc->compile_mutex);
       continue;
     }
-    gdk_threads_leave();
 
-    compile_status = latex_update_pdffile(latex, editor);
+    latex_update_pdffile(latex, editor);
     *mc->typesetter_pid = 0;
     g_mutex_unlock(&mc->compile_mutex);
 
     if (!mc->keep_running)
       g_thread_exit(NULL);
 
-    gdk_threads_enter();
-    previewgui_update_statuslight(compile_status ? "gtk-yes" : "gtk-no");
-
-    /* Make sure the editor still exists after compile */
-    if (editor == gummi_get_active_editor()) {
-      editor_apply_errortags(editor, latex->errorlines);
-      gui_buildlog_set_text(latex->compilelog);
-
-      if (latex->errorlines[0]) {
-        motion_start_errormode(mc, "compile_error");
-      } else {
-        if (!pc->uri) {
-
-          char* uri = g_strconcat(urifrmt, editor->pdffile, NULL);
-          previewgui_set_pdffile(pc, uri);
-          g_free(uri);
-        } else {
-          previewgui_refresh(gui->previewgui,
-                             editor->sync_to_last_edit ?
-                             & (editor->last_edit) : NULL, editor->workfile);
-        }
-        if (mc->errormode) motion_stop_errormode(mc);
-      }
-    }
-    gdk_threads_leave();
+    g_signal_emit_by_name(gui->previewgui->sig_hook, "document-compiled",
+        editor);
   }
 }
 
@@ -259,31 +219,6 @@ void motion_force_compile(GuMotion *mc)
    * don't trigger the regular editor content change signals */
   gummi->latex->modified_since_compile = TRUE;
   motion_do_compile(mc);
-}
-
-void motion_start_errormode(GuMotion *mc, const gchar *msg)
-{
-
-  if (mc->errormode) {
-    infoscreengui_set_message(gui->infoscreengui, msg);
-    return;
-  }
-
-  previewgui_save_position(gui->previewgui);
-
-  infoscreengui_enable(gui->infoscreengui, msg);
-  mc->errormode = TRUE;
-}
-
-void motion_stop_errormode(GuMotion *mc)
-{
-
-  if (!mc->errormode) return;
-
-  previewgui_restore_position(gui->previewgui);
-
-  infoscreengui_disable(gui->infoscreengui);
-  mc->errormode = FALSE;
 }
 
 gboolean motion_idle_cb(gpointer user)
