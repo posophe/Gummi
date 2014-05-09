@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.16.0 on Sun Nov 10 15:26:53 2013 -->
+<!-- Generated with glade 3.18.2 -->
 <interface>
-  <!-- interface-requires gtk+ 3.0 -->
+  <requires lib="gtk+" version="3.0"/>
   <object class="GtkAdjustment" id="autosave_time">
     <property name="lower">1</property>
     <property name="upper">60</property>
@@ -104,6 +104,7 @@
             <property name="visible">True</property>
             <property name="can_focus">True</property>
             <property name="border_width">5</property>
+            <property name="tab_pos">left</property>
             <child>
               <object class="GtkBox" id="box3">
                 <property name="visible">True</property>
