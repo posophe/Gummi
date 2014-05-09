@@ -257,15 +257,17 @@ gboolean on_menu_quit_activate(void)
   /* Stop compile thread */
   if (length > 0) motion_stop_compile_thread(gummi->motion);
 
-  gtk_window_get_size(gui->mainwindow, &width, &height);
-  gtk_window_get_position(gui->mainwindow, &wx, &wy);
+  if (!gtk_window_is_maximized(gui->mainwindow)) {
+    gtk_window_get_size(gui->mainwindow, &width, &height);
+    gtk_window_get_position(gui->mainwindow, &wx, &wy);
 
-  config_begin();
-  config_set_value("mainwindow_x", g_ascii_dtostr(buf, 16, (double)wx));
-  config_set_value("mainwindow_y", g_ascii_dtostr(buf, 16, (double)wy));
-  config_set_value("mainwindow_w", g_ascii_dtostr(buf, 16, (double)width));
-  config_set_value("mainwindow_h", g_ascii_dtostr(buf, 16, (double)height));
-  config_commit();
+    config_begin();
+    config_set_value("mainwindow_x", g_ascii_dtostr(buf, 16, (double)wx));
+    config_set_value("mainwindow_y", g_ascii_dtostr(buf, 16, (double)wy));
+    config_set_value("mainwindow_w", g_ascii_dtostr(buf, 16, (double)width));
+    config_set_value("mainwindow_h", g_ascii_dtostr(buf, 16, (double)height));
+    config_commit();
+  }
 
   gtk_main_quit();
 

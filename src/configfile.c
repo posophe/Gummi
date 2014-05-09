@@ -48,10 +48,11 @@ static gboolean transaction = FALSE;
 const gchar config_str[] =
   "[Global]\n"
   "config_version = "PACKAGE_VERSION"\n"
+  "window_maximized = False\n"
   "mainwindow_x = 0\n"
   "mainwindow_y = 0\n"
-  "mainwindow_w = 792\n"
-  "mainwindow_h = 558\n"
+  "mainwindow_w = 1200\n"
+  "mainwindow_h = 750\n"
   "\n"
   "[Editor]\n"
   "line_numbers = True\n"

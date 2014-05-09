@@ -154,9 +154,18 @@ GummiGui* gui_init(GtkBuilder* builder)
   gchar* icon_file = g_build_filename(GUMMI_DATA, "icons", "icon.png", NULL);
   gtk_window_set_icon_from_file(g->mainwindow, icon_file, NULL);
   g_free(icon_file);
-  gtk_window_resize(g->mainwindow,
-                    atoi(config_get_value("mainwindow_w")),
-                    atoi(config_get_value("mainwindow_h")));
+
+  if (config_get_value("window_maximized")) {
+    gtk_window_maximize(g->mainwindow);
+  } else {
+    gtk_window_resize(g->mainwindow,
+        atoi(config_get_value("mainwindow_w")),
+        atoi(config_get_value("mainwindow_h")));
+  }
+
+  gtk_window_set_default_size(g->mainwindow,
+        atoi(config_get_value("mainwindow_w")),
+        atoi(config_get_value("mainwindow_h")));
 
   wx = atoi(config_get_value("mainwindow_x"));
   wy = atoi(config_get_value("mainwindow_y"));
@@ -463,6 +472,18 @@ void gui_set_hastabs_sensitive(gboolean enable)
   gint i = 0;
   for (i = 0; i < gui->insens_widget_size; ++i)
     gtk_widget_set_sensitive(gui->insens_widgets[i], enable);
+}
+
+G_MODULE_EXPORT
+gboolean on_mainwindow_window_state_event(GtkWidget *widget, GdkEvent* event,
+    void *u)
+{
+  GdkEventWindowState* e = (GdkEventWindowState*)event;
+  if (e->new_window_state & GDK_WINDOW_STATE_MAXIMIZED) {
+    config_set_value("window_maximized", "True");
+  } else {
+    config_set_value("window_maximized", "False");
+  }
 }
 
 G_MODULE_EXPORT
