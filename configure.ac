@@ -35,31 +35,31 @@ AC_SUBST(USE_GTKSPELL)
 AM_PATH_GLIB_2_0([2.20.0], [
 	 GUI_CFLAGS="$GUI_CFLAGS $GLIB_CFLAGS"
 	 GUI_LIBS="$GUI_LIBS $GLIB_LIBS"
-	], [AC_MSG_ERROR([You need Glib >= 2.20.0 to build $PACKAGE])]) 
+	], [AC_MSG_ERROR([You need Glib >= 2.20.0 to build $PACKAGE])])
 
 PKG_CHECK_MODULES(gthread, [gthread-2.0],,
-	[AC_MSG_ERROR([You need ghread-2.0 to build $PACKAGE])]) 
+	[AC_MSG_ERROR([You need ghread-2.0 to build $PACKAGE])])
 GUI_CFLAGS="$GUI_CFLAGS $gthread_CFLAGS"
 GUI_LIBS="$GUI_LIBS $gthread_LIBS"
 
-AM_PATH_GTK_2_0([2.20.0], [
+AM_PATH_GTK_3_0([3.4.0], [
 	 GUI_CFLAGS="$GUI_CFLAGS $GTK_CFLAGS"
 	 GUI_LIBS="$GUI_LIBS $GTK_LIBS"
-	], [AC_MSG_ERROR([You need Gtk+ >= 2.20.0 to build $PACKAGE])]) 
+	], [AC_MSG_ERROR([You need Gtk+ >= 3.4.0 to build $PACKAGE])])
 
-PKG_CHECK_MODULES(gtksourceview, [gtksourceview-2.0 >= 2.2.1],,
-	[AC_MSG_ERROR([You need gtksourceview-2 >= 2.2.1 to build $PACKAGE])]) 
+PKG_CHECK_MODULES(gtksourceview, [gtksourceview-3.0 >= 3.4.0],,
+	[AC_MSG_ERROR([You need gtksourceview3 >= 3.4.0 to build $PACKAGE])])
 GUI_CFLAGS="$GUI_CFLAGS $gtksourceview_CFLAGS"
 GUI_LIBS="$GUI_LIBS $gtksourceview_LIBS"
 
 PKG_CHECK_MODULES(poppler, [poppler-glib],,
-	[AC_MSG_ERROR([You need Poppler to build $PACKAGE])]) 
+	[AC_MSG_ERROR([You need Poppler to build $PACKAGE])])
 GUI_CFLAGS="$GUI_CFLAGS $poppler_CFLAGS"
 GUI_LIBS="$GUI_LIBS $poppler_LIBS"
 
 if test "$spellcheck" = yes; then
-    PKG_CHECK_MODULES(gtkspell, [gtkspell-2.0],,
-	    [AC_MSG_ERROR([You need GtkSpell  to build $PACKAGE])]) 
+    PKG_CHECK_MODULES(gtkspell3, [gtkspell3-3.0],,
+	    [AC_MSG_ERROR([You need gtkspell3 to build $PACKAGE])])
     GUI_CFLAGS="$GUI_CFLAGS $gtkspell_CFLAGS"
     GUI_LIBS="$GUI_LIBS $gtkspell_LIBS"
 fi
@@ -100,7 +100,7 @@ echo
 echo spellcheck support......................... : $spellcheck
 echo
 echo The binary will be installed in $prefix/bin
-echo 
+echo
 
 echo configure complete, now type \'make\'.
 echo
