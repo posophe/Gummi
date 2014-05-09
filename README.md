@@ -6,6 +6,10 @@ Latest news, releases and bug reports can be found on:
 
     http://gummi.midnightcoding.org
 
+Screenshot
+----------
+![screenshot][https://raw.github.com/aitjcize/Gummi/master/wiki/screenshot.png]
+
 Contributing
 ------------
 1. Fork it
