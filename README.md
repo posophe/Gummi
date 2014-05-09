@@ -8,7 +8,7 @@ Latest news, releases and bug reports can be found on:
 
 Screenshot
 ----------
-![screenshot][https://raw.github.com/aitjcize/Gummi/master/wiki/screenshot.png]
+![screenshot](https://raw.github.com/aitjcize/Gummi/master/wiki/gtk3-screenshot.png)
 
 Contributing
 ------------
