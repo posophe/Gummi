@@ -378,7 +378,6 @@ inline static gint get_page_margin(GuPreviewGui* pc)
 
 static void block_handlers_current_page(GuPreviewGui* pc)
 {
-
   g_signal_handler_block(pc->hadj, pc->hvalue_changed_handler);
   g_signal_handler_block(pc->vadj, pc->vvalue_changed_handler);
   g_signal_handler_block(pc->hadj, pc->hchanged_handler);
@@ -387,7 +386,6 @@ static void block_handlers_current_page(GuPreviewGui* pc)
 
 static void unblock_handlers_current_page(GuPreviewGui* pc)
 {
-
   g_signal_handler_unblock(pc->hadj, pc->hvalue_changed_handler);
   g_signal_handler_unblock(pc->vadj, pc->vvalue_changed_handler);
   g_signal_handler_unblock(pc->hadj, pc->hchanged_handler);
@@ -507,7 +505,7 @@ static void update_fit_scale(GuPreviewGui* pc)
   gint spacing;
   GtkRequisition req;
   gtk_widget_style_get(pc->scrollw, "scrollbar_spacing", &spacing, NULL);
-  // Use gtk_widget_get_preferred_size with GTK+3.0
+
   gtk_widget_get_preferred_size(gtk_scrolled_window_get_vscrollbar(
                                   GTK_SCROLLED_WINDOW(pc->scrollw)), &req, NULL);
   gint vscrollbar_width = spacing + req.width;
@@ -516,21 +514,10 @@ static void update_fit_scale(GuPreviewGui* pc)
   gint hscrollbar_height = spacing + req.height;
 
 
-#if GTK_CHECK_VERSION(2, 24, 0) // gdk_window_get_width is gtk-2.24 or higher.
   gint view_width_without_bar = gdk_window_get_width(
                                   gtk_viewport_get_view_window(pc->previewgui_viewport));
   gint view_height_without_bar = gdk_window_get_height(
                                    gtk_viewport_get_view_window(pc->previewgui_viewport));
-#else
-  gint view_width_without_bar, view_height_without_bar;
-  gdk_window_get_width (
-    gtk_viewport_get_view_window(pc->previewgui_viewport),
-    &view_width_without_bar);
-  gdk_window_get_height (
-    gtk_viewport_get_view_window(pc->previewgui_viewport),
-    &view_height_without_bar);
-#endif
-
 
   if (gtk_widget_get_visible(gtk_scrolled_window_get_vscrollbar(
                                GTK_SCROLLED_WINDOW(pc->scrollw)))) {
@@ -544,7 +531,7 @@ static void update_fit_scale(GuPreviewGui* pc)
   gint view_width_with_bar = view_width_without_bar - vscrollbar_width;
   gint view_height_with_bar = view_height_without_bar - hscrollbar_height;
 
-  gdouble scale_height_without_bar = (view_height_without_bar -
+  gdouble scale_height_without_bar = (view_height_with_bar -
                                       height_non_scaling) / height_scaling;
   gdouble scale_full_height_without_bar = (view_height_without_bar -
                                           full_height_non_scaling) / full_height_scaling;
@@ -833,13 +820,27 @@ static void update_drawarea_size(GuPreviewGui *pc)
   gint width = pc->width_scaled + 2 * get_document_margin(pc);
   gint height = pc->height_scaled + 2 * get_document_margin(pc);
 
-  gint w = gtk_adjustment_get_page_size(pc->hadj);
-  gint h = gtk_adjustment_get_page_size(pc->vadj);
+  switch (pc->fit_mode) {
+  case FIT_NONE:
+    break;
+  case FIT_WIDTH:
+    width = 1;
+    break;
+  case FIT_HEIGHT:
+    height = 1;
+    break;
+  case FIT_BOTH:
+    width = height = 1;
+    break;
+  }
 
   gtk_widget_set_size_request(pc->drawarea, width, height);
 
   // The upper values probably get updated through signals, but in some cases
   // this is too slow, so we do it here manually...
+
+  gint w = gtk_adjustment_get_page_size(pc->hadj);
+  gint h = gtk_adjustment_get_page_size(pc->vadj);
 
   // Minimize the number of calls to on_adjustment_changed
   block_handlers_current_page(pc);
