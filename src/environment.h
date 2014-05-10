@@ -35,7 +35,7 @@
 #else
 #   define PACKAGE "gummi"
 #   define PACKAGE_NAME "Gummi"
-#   define PACKAGE_VERSION "svn"
+#   define PACKAGE_VERSION "git"
 #   define PACKAGE_URL "http://gummi.midnightcoding.org/"
 #endif
 
