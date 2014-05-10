@@ -227,6 +227,7 @@ GuPreviewGui* previewgui_init(GtkBuilder * builder)
 
   p->on_resize_handler = g_signal_connect(p->scrollw, "size-allocate",
                                           G_CALLBACK(on_resize), p);
+
   g_signal_connect(p->drawarea, "scroll-event", G_CALLBACK(on_scroll), p);
   p->on_expose_handler = g_signal_connect(p->drawarea, "draw",
                                           G_CALLBACK(on_expose), p);
@@ -343,7 +344,6 @@ static void on_document_compiled(GObject* hook, GuEditor* editor)
       previewgui_start_errormode(pc, "compile_error");
     } else {
       if (!pc->uri) {
-
         gchar* uri = g_strconcat(urifrmt, editor->pdffile, NULL);
         previewgui_set_pdffile(pc, uri);
         g_free(uri);
@@ -361,7 +361,6 @@ static void on_document_error(GObject* hook, const gchar* error_text)
 {
   previewgui_start_errormode(gui->previewgui, error_text);
 }
-
 
 inline static gint get_document_margin(GuPreviewGui* pc)
 {
@@ -480,11 +479,10 @@ void previewgui_update_statuslight(const gchar* type)
 
 static void update_fit_scale(GuPreviewGui* pc)
 {
-
+  //L_F_DEBUG;
   if (pc->fit_mode == FIT_NONE) {
     return;
   }
-  //L_F_DEBUG;
 
   gdouble width_scaling;
   gdouble height_scaling;
@@ -832,28 +830,11 @@ static void update_drawarea_size(GuPreviewGui *pc)
 {
   //L_F_DEBUG;
 
-  gint width = 1;
-  gint height = 1;
+  gint width = pc->width_scaled + 2 * get_document_margin(pc);
+  gint height = pc->height_scaled + 2 * get_document_margin(pc);
 
-  // If the document should be fit, we set the requested size to 1 so
-  // scrollbars will not appear.
-  switch (pc->fit_mode) {
-  case FIT_NONE:
-    width = pc->width_scaled + 2 * get_document_margin(pc);
-    height = pc->height_scaled + 2 * get_document_margin(pc);
-    break;
-  case FIT_WIDTH:
-    height = pc->height_scaled + 2 * get_document_margin(pc);
-    break;
-  case FIT_HEIGHT:
-    width = pc->width_scaled + 2 * get_document_margin(pc);
-    break;
-  case FIT_BOTH:
-    if (is_continuous(pc)) {
-      height = pc->height_scaled + 2 * get_document_margin(pc);
-    }
-    break;
-  }
+  gint w = gtk_adjustment_get_page_size(pc->hadj);
+  gint h = gtk_adjustment_get_page_size(pc->vadj);
 
   gtk_widget_set_size_request(pc->drawarea, width, height);
 
@@ -862,14 +843,11 @@ static void update_drawarea_size(GuPreviewGui *pc)
 
   // Minimize the number of calls to on_adjustment_changed
   block_handlers_current_page(pc);
-  gtk_adjustment_set_upper(pc->hadj,
-                           (width == 1) ? gtk_adjustment_get_page_size(pc->hadj) : width);
-  gtk_adjustment_set_upper(pc->vadj,
-                           (height == 1) ? gtk_adjustment_get_page_size(pc->vadj) : height);
+  gtk_adjustment_set_upper(pc->hadj, MAX(width, w));
+  gtk_adjustment_set_upper(pc->vadj, MAX(height, h));
   gtk_adjustment_changed(pc->hadj);
   unblock_handlers_current_page(pc);
   gtk_adjustment_changed(pc->vadj);
-
 }
 
 static void update_page_sizes(GuPreviewGui* pc)
@@ -956,7 +934,6 @@ static void update_scaled_size(GuPreviewGui* pc)
   } else {
     pc->height_scaled = get_page_height(pc, pc->current_page) * pc->scale;
   }
-
 
 
   pc->width_scaled = pc->width_pages * pc->scale;
@@ -1052,7 +1029,8 @@ void previewgui_set_pdffile(GuPreviewGui* pc, const gchar *uri)
 
   load_document(pc, FALSE);
 
-  // This is mainly for debugging - to make sure the boxes in the preview disappear.
+  // This is mainly for debugging - to make sure the boxes in the preview
+  // disappear.
   synctex_clear_sync_nodes(pc);
 
   // Restore scale and fit mode
@@ -1723,10 +1701,9 @@ void on_combo_sizes_changed(GtkWidget* widget, void* user)
   } else {
     set_fit_mode(gui->previewgui, FIT_NONE);
     previewgui_set_scale(gui->previewgui, list_sizes[index],
-                         gtk_adjustment_get_page_size(gui->previewgui->hadj) / 2,
-                         gtk_adjustment_get_page_size(gui->previewgui->vadj) / 2);
+                    gtk_adjustment_get_page_size(gui->previewgui->hadj) / 2,
+                    gtk_adjustment_get_page_size(gui->previewgui->vadj) / 2);
   }
-
 }
 
 static void paint_page(cairo_t *cr, GuPreviewGui* pc, gint page, gint x,
@@ -1761,7 +1738,6 @@ static void paint_page(cairo_t *cr, GuPreviewGui* pc, gint page, gint x,
   // Paint rendering
   cairo_set_source_surface(cr, rendering, x, y);
   cairo_paint(cr);
-
 
   GSList *nl = pc->sync_nodes;
   while (nl != NULL && in_debug_mode()) {
@@ -1975,9 +1951,6 @@ gboolean on_expose(GtkWidget* w, cairo_t* cr, void* user)
 {
   GuPreviewGui* pc = GU_PREVIEW_GUI(user);
 
-//    slog(L_INFO, "paint document with scale %f, region (%i, %i), w=%i,
-//    h=%i\n", e->area.x, e->area.y, e->area.width, e->area.height);
-
   //slog(L_INFO, "scale: %f", pc->scale);
 
   if (!pc->uri || !utils_path_exists(pc->uri + usize)) {
@@ -1989,8 +1962,6 @@ gboolean on_expose(GtkWidget* w, cairo_t* cr, void* user)
 
   gdouble offset_x = MAX(get_document_margin(pc),
                          (page_width - pc->width_scaled) / 2);
-
-  //cairo_t *cr = gdk_cairo_create(gtk_widget_get_window(w));
 
   if (is_continuous(pc)) {
 
