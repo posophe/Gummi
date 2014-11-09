@@ -353,13 +353,11 @@ void editor_activate_spellchecking(GuEditor* ec, gboolean status)
 
 void editor_fill_buffer(GuEditor* ec, const gchar* text)
 {
-  gtk_text_buffer_begin_user_action(ec_buffer);
   gtk_source_buffer_begin_not_undoable_action(ec->buffer);
   gtk_widget_set_sensitive(GTK_WIDGET(ec->view), FALSE);
   gtk_text_buffer_set_text(ec_buffer, text, strlen(text));
   gtk_widget_set_sensitive(GTK_WIDGET(ec->view), TRUE);
   gtk_source_buffer_end_not_undoable_action(ec->buffer);
-  gtk_text_buffer_end_user_action(ec_buffer);
 
   /* place cursor in the beggining of the document */
   GtkTextIter start;
@@ -479,12 +477,12 @@ void editor_set_selection_textstyle(GuEditor* ec, const gchar* type)
       /* the text contains a partially styled text, remove it and apply
        * style to the whole text */
       outtext = g_strdup_printf("%s%s%s%s%s",
-                                style[selected][1], result[1], result[2], result[3],
-                                style[selected][2]);
+          style[selected][1], result[1], result[2], result[3],
+          style[selected][2]);
     }
   } else { /* no previous style applied */
     outtext = g_strdup_printf("%s%s%s",
-                              style[selected][1], selected_text, style[selected][2]);
+        style[selected][1], selected_text, style[selected][2]);
   }
 
   gtk_text_buffer_begin_user_action(ec_buffer);
