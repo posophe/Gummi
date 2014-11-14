@@ -1231,9 +1231,8 @@ msgstr "Confirmación"
 #~ msgid "New document"
 #~ msgstr "Crear documento nuevo"
 
-#, fuzzy
-#~ msgid "Open file"
-#~ msgstr "Abrir Archivo..."
+msgid "Open file"
+msgstr "Abrir Archivo..."
 
 #~ msgid ""
 #~ "Alignment of the\n"
@@ -1323,5 +1322,5 @@ msgstr "Confirmación"
 #~ msgid "Changes will become active on next start"
 #~ msgstr "Los cambios se activarán en el próximo inicio"
 
-#~ msgid "Save File..."
-#~ msgstr "Guardar Archivo..."
+msgid "Save File..."
+msgstr "Guardar Archivo..."
