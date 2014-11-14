@@ -845,7 +845,7 @@ msgstr "Fragmentos:"
 #: ../data/ui/snippets.glade.h:5
 #, fuzzy
 msgid "Create a new snippet"
-msgstr "Crear documento nuevo"
+msgstr "Abrir documento"
 
 #: ../data/ui/snippets.glade.h:6
 #, fuzzy
@@ -979,14 +979,13 @@ msgid "%s loaded"
 msgstr "%s cargado"
 
 #: ../src/gui/gui-main.c:744
-#, fuzzy, c-format
+#, c-format
 msgid "Do you want to save the changes to %s?"
-msgstr "¿Desea guardar los cambios efectuados?"
+msgstr "¿Desea guardar los cambios efectuados %s?"
 
 #: ../src/gui/gui-main.c:745
-#, fuzzy
 msgid "this document"
-msgstr "Crear documento nuevo"
+msgstr "Guardar documento"
 
 #: ../src/gui/gui-main.c:753
 msgid "Unsaved Changes"
