@@ -22,7 +22,7 @@ case $2 in
 		poppler_glib_ver=4
 		;;
 	precise|trusty|utopic|vivid)
-    poppler_glib_ver=8
+		poppler_glib_ver=8
 	;;
 esac
 
@@ -76,7 +76,7 @@ cd $package-$version
 
 dh_make -s
 
-cp $owd/dev/rules $owd/dev/control debian
+cp $owd/dev/control debian
 cd debian
 
 rm *.ex *.EX README.*
@@ -84,10 +84,10 @@ rm *.ex *.EX README.*
 dch -e
 
 if test 1 -eq $notex; then
-    sed -i 's/Source: gummi/Source: gummi-notex/g' control
-    sed -i 's/Package: gummi/Package: gummi-notex/g' control
+    sed -i 's/Source: gummi-gtk3/Source: gummi-gtk3-notex/g' control
+    sed -i 's/Package: gummi-gtk3/Package: gummi-gtk3-notex/g' control
     sed -i 's/, texlive, texlive-extra-utils, texlive-latex-extra//g' control
-    sed -i 's/gummi/gummi-notex/g' changelog
+    sed -i 's/gummi-gtk3/gummi-gtk3-notex/g' changelog
     mv ../../${package}_$version.orig.tar.gz ../../${package}-notex_$version.orig.tar.gz
 fi
 
