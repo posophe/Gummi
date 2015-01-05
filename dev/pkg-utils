@@ -21,20 +21,8 @@ case $2 in
 	lucid)
 		poppler_glib_ver=4
 		;;
-	maverick)
-		poppler_glib_ver=5
-		;;
-	natty)
-		poppler_glib_ver=6
-		;;
-	oneiric)
-		poppler_glib_ver=6
-        ;;
-	precise)
-        	poppler_glib_ver=8
-	;;
-	quantal)
-		poppler_glib_ver=8
+	precise|trusty|utopic|vivid)
+    poppler_glib_ver=8
 	;;
 esac
 
