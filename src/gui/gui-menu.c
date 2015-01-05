@@ -35,6 +35,7 @@
 #include "environment.h"
 #include "external.h"
 #include "gui-main.h"
+#include "gui-preview.h"
 #include "motion.h"
 #include "project.h"
 
@@ -257,7 +258,10 @@ gboolean on_menu_quit_activate(void)
   /* Stop compile thread */
   if (length > 0) motion_stop_compile_thread(gummi->motion);
 
-  if (!gtk_window_is_maximized(gui->mainwindow)) {
+  gboolean is_maximized;
+  g_object_get(gui->mainwindow, "is-maximized", &is_maximized, NULL);
+
+  if (!is_maximized) {
     gtk_window_get_size(gui->mainwindow, &width, &height);
     gtk_window_get_position(gui->mainwindow, &wx, &wy);
 

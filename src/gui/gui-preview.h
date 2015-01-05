@@ -179,6 +179,7 @@ void previewgui_cleanup_fds(GuPreviewGui* pc);
 void previewgui_start_preview(GuPreviewGui* pc);
 void previewgui_drawarea_resize(GuPreviewGui* pc);
 void previewgui_stop_preview(GuPreviewGui* pc);
+void previewgui_start_errormode(GuPreviewGui *pc, const gchar *msg);
 void on_page_input_changed(GtkEntry* entry, void* user);
 void on_next_page_clicked(GtkWidget* widget, void* user);
 void on_prev_page_clicked(GtkWidget* widget, void* user);

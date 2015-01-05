@@ -164,7 +164,6 @@ gpointer motion_compile_thread(gpointer data)
   GuEditor* editor = NULL;
   GuLatex* latex = NULL;
   gboolean precompile_ok = FALSE;
-  gboolean compile_status = FALSE;
   gchar *editortext;
 
   latex = gummi_get_latex();
