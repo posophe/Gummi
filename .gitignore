@@ -14,11 +14,17 @@ stamp-h1
 install-sh
 depcomp
 missing
+compile
 ltmain.sh
 .deps
 .libs
+.dirstamp
+stamp-it
+*.desktop
+POTFILES
 
 # intermediate files
 *.o
 *.lo
 *.la
+*.gmo

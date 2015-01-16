@@ -249,10 +249,13 @@ gboolean on_menu_quit_activate(void)
     tabmanager_set_active_tab(i);
 
     gint ret = check_for_save(g_active_editor);
-    if (GTK_RESPONSE_YES == ret)
+    if (GTK_RESPONSE_YES == ret) {
       gui_save_file(g_active_tab, FALSE);
-    else if (GTK_RESPONSE_CANCEL == ret || GTK_RESPONSE_DELETE_EVENT == ret)
+    }
+    else if (GTK_RESPONSE_CANCEL == ret || GTK_RESPONSE_DELETE_EVENT == ret) {
+      motion_resume_compile_thread(gummi->motion);
       return TRUE;
+    }
   }
 
   /* Stop compile thread */
