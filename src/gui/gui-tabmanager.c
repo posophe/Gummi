@@ -162,8 +162,8 @@ gchar* tabmanagergui_get_labeltext(GuTabPage* tp)
   const gchar* text = gtk_label_get_text(GTK_LABEL(tp->label));
   return (gchar*)text;
 }
-GtkWidget *scrolled_view = GTK_WIDGET (g_active_editor->view);
 gint tabmanagergui_replace_page(GuTabContext* tc, GuEditor* newec)
+GtkWidget *scrolled_view = GTK_WIDGET (g_active_editor->view);
 {
 
   gummi->tabmanager->active_tab->editor = newec;
